@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>🌸 Sakura Notes</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap');
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    min-height:100vh;
+    overflow:hidden;
+    font-family:'Inter',sans-serif;
+
+    background:
+    radial-gradient(circle at 15% 20%, rgba(255,182,193,.18), transparent 25%),
+    radial-gradient(circle at 85% 80%, rgba(255,105,180,.15), transparent 25%),
+    linear-gradient(180deg,#08080a,#101014,#171720);
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+/* Floating Cherry Blossoms */
+.petal{
+    position:fixed;
+    top:-20px;
+    color:#ffb6c1;
+    opacity:.7;
+    animation:fall linear infinite;
+    user-select:none;
+    pointer-events:none;
+}
+
+@keyframes fall{
+    from{
+        transform:translateY(-10vh) rotate(0deg);
+    }
+    to{
+        transform:translateY(110vh) rotate(360deg);
+    }
+}
+
+/* Glass Container */
+.container{
+    width:min(1000px,95vw);
+    height:90vh;
+
+    background:rgba(255,255,255,.05);
+
+    backdrop-filter:blur(30px);
+    -webkit-backdrop-filter:blur(30px);
+
+    border:1px solid rgba(255,255,255,.08);
+
+    border-radius:32px;
+
+    box-shadow:
+    0 15px 50px rgba(0,0,0,.55),
+    inset 0 1px 0 rgba(255,255,255,.08);
+
+    overflow:hidden;
+}
+
+/* Header */
+.header{
+    height:80px;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    padding:0 25px;
+
+    border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.title{
+    color:#ffd6e7;
+    font-size:1.4rem;
+    font-weight:800;
+    letter-spacing:.5px;
+}
+
+.status{
+    color:#ff9ec7;
+    font-size:.9rem;
+    font-weight:700;
+}
+
+/* Notes Area */
+textarea{
+    width:100%;
+    height:calc(100% - 80px);
+
+    background:transparent;
+    border:none;
+    outline:none;
+
+    resize:none;
+
+    color:#ffe4ee;
+
+    padding:28px;
+
+    font-size:18px;
+    font-weight:700;
+    line-height:1.9;
+}
+
+textarea::placeholder{
+    color:rgba(255,228,238,.4);
+}
+
+/* Scrollbar */
+textarea::-webkit-scrollbar{
+    width:8px;
+}
+
+textarea::-webkit-scrollbar-thumb{
+    background:rgba(255,182,193,.25);
+    border-radius:10px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <div class="title">🌸 Sakura Notes</div>
+        <div class="status" id="status">Ready</div>
+    </div>
+
+    <textarea
+        id="notes"
+        placeholder="Write your thoughts, ideas, secrets, dreams..."
+    ></textarea>
+
+</div>
+
+<script>
+// Auto Save Notes
+const notes = document.getElementById("notes");
+const status = document.getElementById("status");
+
+notes.value = localStorage.getItem("sakura_notes") || "";
+
+let timeout;
+
+notes.addEventListener("input", () => {
+
+    localStorage.setItem("sakura_notes", notes.value);
+
+    status.textContent = "Saved ✓";
+
+    clearTimeout(timeout);
+
+    timeout = setTimeout(() => {
+        status.textContent = "Ready";
+    }, 1500);
+
+});
+
+// Cherry Blossom Petals
+for(let i=0;i<25;i++){
+
+    const petal = document.createElement("div");
+
+    petal.className = "petal";
+    petal.innerHTML = "🌸";
+
+    petal.style.left = Math.random()*100 + "vw";
+
+    petal.style.fontSize =
+        (12 + Math.random()*18) + "px";
+
+    petal.style.animationDuration =
+        (8 + Math.random()*12) + "s";
+
+    petal.style.animationDelay =
+        (Math.random()*10) + "s";
+
+    document.body.appendChild(petal);
+}
+</script>
+
+</body>
+</html>
