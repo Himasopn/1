@@ -4,10 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>🌸 Sakura Notes</title>
+<title>🌸 Sakura Journal</title>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+
+:root{
+    --bg:#000000;
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.08);
+    --text:#ffe8f1;
+    --accent:#ff9fc8;
+}
 
 *{
     margin:0;
@@ -15,183 +23,351 @@
     box-sizing:border-box;
 }
 
-body{
-    min-height:100vh;
+html,body{
+    width:100%;
+    height:100%;
     overflow:hidden;
-    font-family:'Inter',sans-serif;
-
-    background:
-    radial-gradient(circle at 15% 20%, rgba(255,182,193,.18), transparent 25%),
-    radial-gradient(circle at 85% 80%, rgba(255,105,180,.15), transparent 25%),
-    linear-gradient(180deg,#08080a,#101014,#171720);
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
+    background:#000;
+    font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',sans-serif;
 }
 
-/* Floating Cherry Blossoms */
-.petal{
+/* AMOLED Background */
+body{
+    background:
+    radial-gradient(circle at 20% 20%, rgba(255,105,180,.06), transparent 30%),
+    radial-gradient(circle at 80% 80%, rgba(255,182,193,.05), transparent 30%),
+    #000;
+}
+
+/* Sakura Layer */
+#sakura-layer{
     position:fixed;
-    top:-20px;
-    color:#ffb6c1;
-    opacity:.7;
-    animation:fall linear infinite;
-    user-select:none;
+    inset:0;
+    overflow:hidden;
     pointer-events:none;
+    z-index:1;
+}
+
+.petal{
+    position:absolute;
+    top:-10vh;
+    color:#ffbfd7;
+    opacity:.65;
+    will-change:transform;
+    user-select:none;
+
+    animation-name:fall,sway;
+    animation-timing-function:linear,ease-in-out;
+    animation-iteration-count:infinite,infinite;
 }
 
 @keyframes fall{
     from{
-        transform:translateY(-10vh) rotate(0deg);
+        transform:
+            translate3d(0,-10vh,0)
+            rotate(0deg);
     }
     to{
-        transform:translateY(110vh) rotate(360deg);
+        transform:
+            translate3d(-150px,110vh,0)
+            rotate(720deg);
     }
 }
 
-/* Glass Container */
-.container{
-    width:min(1000px,95vw);
-    height:90vh;
+@keyframes sway{
+    0%{ margin-left:0; }
+    50%{ margin-left:80px; }
+    100%{ margin-left:0; }
+}
 
-    background:rgba(255,255,255,.05);
+/* Glass Glow */
+.glow{
+    position:fixed;
+    width:500px;
+    height:500px;
+    border-radius:50%;
+    background:radial-gradient(circle,
+    rgba(255,140,180,.10),
+    transparent 70%);
+    filter:blur(80px);
+    pointer-events:none;
+    z-index:2;
+}
 
-    backdrop-filter:blur(30px);
-    -webkit-backdrop-filter:blur(30px);
+/* Main App */
+.app{
+    position:relative;
+    z-index:10;
 
-    border:1px solid rgba(255,255,255,.08);
+    width:100vw;
+    height:100vh;
 
-    border-radius:32px;
+    display:flex;
+    flex-direction:column;
 
-    box-shadow:
-    0 15px 50px rgba(0,0,0,.55),
-    inset 0 1px 0 rgba(255,255,255,.08);
+    backdrop-filter:blur(25px);
+    -webkit-backdrop-filter:blur(25px);
 
-    overflow:hidden;
+    background:rgba(0,0,0,.15);
 }
 
 /* Header */
 .header{
-    height:80px;
+    height:72px;
+    min-height:72px;
 
     display:flex;
-    justify-content:space-between;
     align-items:center;
+    justify-content:space-between;
 
-    padding:0 25px;
+    padding:0 28px;
 
-    border-bottom:1px solid rgba(255,255,255,.08);
+    border-bottom:1px solid rgba(255,255,255,.06);
+
+    background:rgba(255,255,255,.02);
+    backdrop-filter:blur(30px);
 }
 
 .title{
-    color:#ffd6e7;
-    font-size:1.4rem;
+    color:var(--text);
+    font-size:1.15rem;
     font-weight:800;
-    letter-spacing:.5px;
+    letter-spacing:.3px;
 }
 
 .status{
-    color:#ff9ec7;
+    color:var(--accent);
     font-size:.9rem;
     font-weight:700;
 }
 
-/* Notes Area */
+/* Notes */
 textarea{
-    width:100%;
-    height:calc(100% - 80px);
+    flex:1;
 
-    background:transparent;
+    width:100%;
+    height:100%;
+
     border:none;
     outline:none;
 
+    background:transparent;
+
+    color:var(--text);
+
+    font-size:19px;
+    font-weight:700;
+
+    line-height:1.95;
+
+    padding:40px;
+
     resize:none;
 
-    color:#ffe4ee;
-
-    padding:28px;
-
-    font-size:18px;
-    font-weight:700;
-    line-height:1.9;
+    caret-color:#ff9fc8;
 }
 
 textarea::placeholder{
-    color:rgba(255,228,238,.4);
+    color:rgba(255,230,240,.28);
+    font-weight:600;
 }
 
-/* Scrollbar */
 textarea::-webkit-scrollbar{
     width:8px;
 }
 
 textarea::-webkit-scrollbar-thumb{
-    background:rgba(255,182,193,.25);
-    border-radius:10px;
+    background:rgba(255,180,210,.15);
+    border-radius:999px;
+}
+
+/* Bottom fade */
+.bottom-fade{
+    position:absolute;
+    bottom:0;
+    left:0;
+    right:0;
+
+    height:120px;
+
+    pointer-events:none;
+
+    background:linear-gradient(
+        transparent,
+        rgba(0,0,0,.4)
+    );
+}
+
+/* Mobile */
+@media(max-width:768px){
+
+    .title{
+        font-size:1rem;
+    }
+
+    textarea{
+        padding:25px;
+        font-size:17px;
+    }
 }
 </style>
 </head>
 <body>
 
-<div class="container">
+<div id="sakura-layer"></div>
+
+<div class="glow" id="glow"></div>
+
+<div class="app">
 
     <div class="header">
-        <div class="title">🌸 Sakura Notes</div>
+        <div class="title">🌸 Sakura Journal</div>
         <div class="status" id="status">Ready</div>
     </div>
 
     <textarea
         id="notes"
-        placeholder="Write your thoughts, ideas, secrets, dreams..."
+        placeholder="Write your thoughts, dreams, plans..."
     ></textarea>
+
+    <div class="bottom-fade"></div>
 
 </div>
 
 <script>
-// Auto Save Notes
+
+/* =========================
+   Local Storage Save
+========================= */
+
 const notes = document.getElementById("notes");
 const status = document.getElementById("status");
 
-notes.value = localStorage.getItem("sakura_notes") || "";
+notes.value =
+localStorage.getItem("sakura_journal") || "";
 
-let timeout;
+let saveTimeout;
 
-notes.addEventListener("input", () => {
+notes.addEventListener("input",()=>{
 
-    localStorage.setItem("sakura_notes", notes.value);
+    localStorage.setItem(
+        "sakura_journal",
+        notes.value
+    );
 
     status.textContent = "Saved ✓";
 
-    clearTimeout(timeout);
+    clearTimeout(saveTimeout);
 
-    timeout = setTimeout(() => {
+    saveTimeout = setTimeout(()=>{
         status.textContent = "Ready";
-    }, 1500);
-
+    },1200);
 });
 
-// Cherry Blossom Petals
-for(let i=0;i<25;i++){
+/* =========================
+   Smooth Sakura Generator
+========================= */
 
-    const petal = document.createElement("div");
+const layer =
+document.getElementById("sakura-layer");
+
+const petals = 55;
+
+for(let i=0;i<petals;i++){
+
+    const petal =
+    document.createElement("div");
 
     petal.className = "petal";
-    petal.innerHTML = "🌸";
 
-    petal.style.left = Math.random()*100 + "vw";
+    const icons = [
+        "❀",
+        "✿",
+        "❁",
+        "🌸"
+    ];
+
+    petal.textContent =
+    icons[
+        Math.floor(
+            Math.random()*icons.length
+        )
+    ];
+
+    const size =
+    12 + Math.random()*20;
 
     petal.style.fontSize =
-        (12 + Math.random()*18) + "px";
+    size + "px";
+
+    petal.style.left =
+    Math.random()*100 + "vw";
+
+    const fallDuration =
+    18 + Math.random()*25;
+
+    const swayDuration =
+    4 + Math.random()*8;
 
     petal.style.animationDuration =
-        (8 + Math.random()*12) + "s";
+    `${fallDuration}s, ${swayDuration}s`;
 
     petal.style.animationDelay =
-        (Math.random()*10) + "s";
+    `${-Math.random()*40}s, 0s`;
 
-    document.body.appendChild(petal);
+    petal.style.opacity =
+    0.25 + Math.random()*0.5;
+
+    layer.appendChild(petal);
 }
+
+/* =========================
+   Floating Glow
+========================= */
+
+const glow =
+document.getElementById("glow");
+
+let mouseX =
+window.innerWidth/2;
+
+let mouseY =
+window.innerHeight/2;
+
+window.addEventListener(
+'mousemove',
+e=>{
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+}
+);
+
+function animateGlow(){
+
+    const x =
+    mouseX - 250;
+
+    const y =
+    mouseY - 250;
+
+    glow.style.transform =
+    `translate(${x}px,${y}px)`;
+
+    requestAnimationFrame(
+        animateGlow
+    );
+}
+
+animateGlow();
+
+/* =========================
+   Auto Focus
+========================= */
+
+window.onload = ()=>{
+    notes.focus();
+};
+
 </script>
 
 </body>
