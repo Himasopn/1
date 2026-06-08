@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>🌸 nothing. </title>
+<title>🌸 just nothing.</title>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
@@ -135,10 +135,46 @@ body{
     letter-spacing:.3px;
 }
 
-.status{
+.top-stats{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    color:var(--text);
+}
+
+.stat{
+    min-width:102px;
+    padding:8px 12px;
+    border:1px solid rgba(255,255,255,.07);
+    border-radius:16px;
+    background:rgba(255,255,255,.035);
+    box-shadow:0 10px 30px rgba(255,105,180,.04);
+}
+
+.stat-label{
+    display:block;
+    color:rgba(255,232,241,.55);
+    font-size:.68rem;
+    font-weight:700;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+}
+
+.stat-value{
+    display:block;
+    margin-top:3px;
     color:var(--accent);
     font-size:.9rem;
-    font-weight:700;
+    font-weight:800;
+    white-space:nowrap;
+}
+
+.save-status{
+    min-width:68px;
+    color:rgba(255,159,200,.72);
+    font-size:.82rem;
+    font-weight:800;
+    text-align:right;
 }
 
 /* Notes */
@@ -199,6 +235,35 @@ textarea::-webkit-scrollbar-thumb{
 }
 
 /* Mobile */
+@media(max-width:980px){
+
+    .header{
+        height:auto;
+        min-height:72px;
+        align-items:flex-start;
+        flex-direction:column;
+        gap:14px;
+        padding:18px 20px;
+    }
+
+    .top-stats{
+        width:100%;
+        display:grid;
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:10px;
+    }
+
+    .stat{
+        min-width:0;
+    }
+
+    .save-status{
+        grid-column:1 / -1;
+        min-width:0;
+        text-align:left;
+    }
+}
+
 @media(max-width:768px){
 
     .title{
@@ -208,6 +273,13 @@ textarea::-webkit-scrollbar-thumb{
     textarea{
         padding:25px;
         font-size:17px;
+    }
+}
+
+@media(max-width:460px){
+
+    .top-stats{
+        grid-template-columns:1fr;
     }
 }
 </style>
@@ -221,8 +293,26 @@ textarea::-webkit-scrollbar-thumb{
 <div class="app">
 
     <div class="header">
-        <div class="title">🌸 just nothing. </div>
-        <div class="status" id="status">Ready</div>
+        <div class="title">🌸 just nothing.</div>
+        <div class="top-stats" aria-label="Time and year progress">
+            <div class="stat">
+                <span class="stat-label">Time</span>
+                <span class="stat-value" id="current-time">--:--:--</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Day ends in</span>
+                <span class="stat-value" id="day-left">--:--:--</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Day left</span>
+                <span class="stat-value" id="day-percent-left">--%</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Year left</span>
+                <span class="stat-value" id="year-left">-- days</span>
+            </div>
+            <div class="save-status" id="status">Ready</div>
+        </div>
     </div>
 
     <textarea
@@ -242,16 +332,32 @@ textarea::-webkit-scrollbar-thumb{
 
 const notes = document.getElementById("notes");
 const status = document.getElementById("status");
+const currentTime = document.getElementById("current-time");
+const dayLeft = document.getElementById("day-left");
+const dayPercentLeft = document.getElementById("day-percent-left");
+const yearLeft = document.getElementById("year-left");
+const notesStorageKey = "just_nothing_notes";
+const oldNotesStorageKey = "sakura_journal";
+
+const savedNotes =
+localStorage.getItem(notesStorageKey);
+
+const oldSavedNotes =
+localStorage.getItem(oldNotesStorageKey);
 
 notes.value =
-localStorage.getItem("sakura_journal") || "";
+savedNotes ?? oldSavedNotes ?? "";
+
+if(savedNotes === null && oldSavedNotes !== null){
+    localStorage.setItem(notesStorageKey, oldSavedNotes);
+}
 
 let saveTimeout;
 
 notes.addEventListener("input",()=>{
 
     localStorage.setItem(
-        "sakura_journal",
+        notesStorageKey,
         notes.value
     );
 
@@ -263,6 +369,82 @@ notes.addEventListener("input",()=>{
         status.textContent = "Ready";
     },1200);
 });
+
+
+/* =========================
+   Top Bar Clock + Countdown
+========================= */
+
+function padTime(value){
+    return String(value).padStart(2,"0");
+}
+
+function formatDuration(milliseconds){
+    const totalSeconds =
+    Math.max(0,Math.floor(milliseconds/1000));
+
+    const hours =
+    Math.floor(totalSeconds/3600);
+
+    const minutes =
+    Math.floor((totalSeconds%3600)/60);
+
+    const seconds =
+    totalSeconds%60;
+
+    return `${padTime(hours)}:${padTime(minutes)}:${padTime(seconds)}`;
+}
+
+function updateTopStats(){
+    const now = new Date();
+
+    currentTime.textContent =
+    now.toLocaleTimeString([],{
+        hour:"2-digit",
+        minute:"2-digit",
+        second:"2-digit"
+    });
+
+    const midnight =
+    new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate()+1,
+        0,0,0,0
+    );
+
+    const startOfDay =
+    new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        0,0,0,0
+    );
+
+    const millisecondsInDay =
+    midnight - startOfDay;
+
+    const millisecondsLeftToday =
+    midnight - now;
+
+    dayLeft.textContent =
+    formatDuration(millisecondsLeftToday);
+
+    dayPercentLeft.textContent =
+    `${((millisecondsLeftToday/millisecondsInDay)*100).toFixed(2)}%`;
+
+    const endOfYear =
+    new Date(now.getFullYear()+1,0,1,0,0,0,0);
+
+    const daysLeft =
+    Math.ceil((endOfYear-now)/(1000*60*60*24));
+
+    yearLeft.textContent =
+    `${daysLeft} day${daysLeft === 1 ? "" : "s"}`;
+}
+
+updateTopStats();
+setInterval(updateTopStats,1000);
 
 /* =========================
    Smooth Sakura Generator
